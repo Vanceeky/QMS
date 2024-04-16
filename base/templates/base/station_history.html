@@ -1,0 +1,106 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<div class="container-fluid py-4">
+
+  <div class="header-body">
+
+      <div class="align-items-center py-4 d-flex justify-content-between">
+        <nav
+          aria-label="breadcrumb"
+          class=" d-md-inline-block ml-md-4 text-capitalize"
+        >
+          <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+            <li class="breadcrumb-item">
+              <a href="#"><i class="fas fa-home"></i></a>
+            </li>
+            <li class="breadcrumb-item">
+              <a href="">{{ station.name }}</a>
+            </li>
+            <li class="breadcrumb-item active">
+              <a href="">List of Transactions</a>
+            </li>
+
+          </ol>
+        </nav>
+
+        <div>
+
+          <button class="btn btn-md bg-gradient-info" data-bs-toggle="modal" data-bs-target="#modal-report  "><i class="fas fa-plus"></i> Generate Report </button>
+
+        </div>
+
+      </div>
+
+  </div>
+
+
+  <div class="row">
+    <div class="col-8">
+        <div class="card mb-4">
+            <div class="card-header pb-0">
+                <h6>List of Transactions </h6>
+            </div>
+            <div class="card-body px-0 pt-0 pb-2">
+                <div class="table-responsive p-0">
+                    <table class="table align-items-center justify-content-center mb-0" id="myTable">
+                        <thead>
+                            <tr>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2 text-center">Token Number</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder text-center opacity-7 ps-2">Driver</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder text-center opacity-7 ps-2">Date created</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder text-center opacity-7 ps-2">Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                          {% for history in q_history %}
+                            <tr>
+                                <td class="text-center">
+                                  <p class="text-sm font-weight-bold mb-0">{{ history.token_number }}</p>
+                                </td>
+                                <td class="text-center">
+                                  <p class="text-sm font-weight-bold mb-0">{{ history.driver }}</p>
+                                </td>
+                                <td class="align-middle text-center">
+                                  <p class="text-sm font-weight-bold mb-0">{{ history.entry_time }}</p>
+                                </td>
+                                <td class="align-middle text-center">
+                                  <span class="badge badge-sm bg-gradient-success">{{ history.status }}</span>
+                                </td>
+
+
+                                <td class="align-middle">
+                                    <button class="btn btn-link text-secondary mb-0">
+                                    <i class="fa fa-ellipsis-v text-xs" aria-hidden="true"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                          {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+
+
+<script src="/static/assets/js/dataTables.min.js"></script>
+
+<script>
+  let table = new DataTable('#myTable');
+
+</script>
+
+
+{% endblock %}

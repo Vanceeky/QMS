@@ -1,0 +1,277 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<div class="container-fluid py-4">
+
+  <div class="header-body">
+
+      <div class="align-items-center py-4 d-flex justify-content-between">
+        <nav
+          aria-label="breadcrumb"
+          class=" d-md-inline-block ml-md-4 text-capitalize"
+        >
+          <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+            <li class="breadcrumb-item">
+              <a href="#"><i class="fas fa-home"></i></a>
+            </li>
+            <li class="breadcrumb-item">
+              <a href="">Station List</a>
+            </li>
+
+          </ol>
+        </nav>
+
+        <div>
+
+          <button class="btn btn-md bg-gradient-info" data-bs-toggle="modal" data-bs-target="#add-station"><i class="fas fa-plus"></i> Add Station </button>
+
+        </div>
+
+      </div>
+
+  </div>
+
+
+  <div class="container-fluid py-4">
+
+
+    <div class="row">
+      {% for station in stations %}
+
+        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4 my-3">
+          <div class="card">
+            <div class="card-body p-3">
+              <div class="row">
+                <div class="col-8">
+                  <div class="numbers">
+                    <p class="text-sm mb-0 text-uppercase text-muted font-weight-bold">{{ station.station_manager}} </p>
+                    
+                        <h5 class="font-weight-bolder">
+                            <a href="{% url 'station_history' station.id %}">
+                         {{ station.name }}
+                        </a>
+                        </h5>
+                  
+                    <p class="mb-0">
+                      {% for route in station.routes.all %}
+                        {{ route }}
+
+                      {% endfor %}
+                    </p>
+                  </div>
+                </div>
+                <div class="col-4 text-end">
+                  <div class="icon icon-shape bg-gradient-primary shadow-primary text-center rounded-circle">
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#edit-station">
+                      <i class="fas fa-edit text-md opacity-10" aria-hidden="true"></i>
+                  </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      {% endfor %}
+  
+    </div>
+  
+  </div>
+  
+  
+  
+  
+  <!-- Modal -->
+  
+  
+  
+  <div class="col-md-4">
+
+    <!-- Modal -->
+    <div class="modal fade" id="add-station" tabindex="-1" role="dialog" aria-labelledby="exampleModalSignTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+        <div class="modal-content">
+          <div class="modal-body p-0">
+            <div class="card card-plain">
+              <div class="card-header pb-0 text-left border-bottom">
+                  <h3 class="font-weight-bolder text-primary text-gradient">Add new Station</h3>
+              </div>
+              <div class="card-body pb-3">
+                <form role="form text-left" action="{% url 'create_station_and_route' %}" method='POST' id="create-station-and-route-form">
+                  {% csrf_token %}
+                  <div class="row">
+
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label for="exampleFormControlSelect1">Station Manager: </label>
+                        <select class="form-control" id="manager" name="station_manager">
+                          <option selected>.........</option>
+                          {% for user in available_users %}
+                            <option value="{{ user.id }}">{{ user }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                    </div>
+                    
+                    <div class="col-md-12">
+                      <label for="">Station:</label>
+                      <div class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder="Station name" name="station_name" required>
+                      </div>
+                    </div>
+                    
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label for="exampleFormControlSelect1">Select Route</label>
+                        <select class="form-control" id="route" name="route">
+
+                          <option selected>.........</option>
+                          {% for route in available_routes %}
+                            <option value="{{ route.id }}">{{ route }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                    </div>
+                    
+
+
+
+
+                  </div>
+
+                  <div class="text-center">
+                    <button type="submit" class="btn bg-gradient-primary btn-lg btn-rounded w-100 mt-4 mb-0">Add new station</button>
+                  </div>
+                </form>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="edit-station" tabindex="-1" role="dialog" aria-labelledby="exampleModalSignTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+      <div class="modal-content">
+        <div class="modal-body p-0">
+          <div class="card card-plain">
+            <div class="card-header pb-0 text-left border-bottom">
+                <h3 class="font-weight-bolder text-primary text-gradient">Edit Station</h3>
+            </div>
+            <div class="card-body pb-3">
+              {{ station.id }}
+              <form role="form text-left" action="" method="POST" id="edit-station-form">
+                {% csrf_token %}
+                <input type="hidden" name="station_id" value="{{ station.id }}">
+                <div class="row">
+            
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="exampleFormControlSelect1">Station Manager: </label>
+                            <select class="form-control" id="manager" name="station_manager">
+                                <option selected>.........</option>
+                                {% for user in available_users %}
+                                    <option value="{{ user.id }}" {% if user.id == station.station_manager.id %}selected{% endif %}>{{ user }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-12">
+                        <label for="">Station:</label>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" placeholder="Station name" name="station_name" required value="{{ station.name }}">
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="exampleFormControlSelect1">Select Route</label>
+                            <select class="form-control" id="route" name="route">
+                                <option selected>.........</option>
+                                {% for route in available_routes %}
+                                    <option value="{{ route.id }}" {% if route.id == station.route.id %}selected{% endif %}>{{ route }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="text-center">
+                    <button type="submit" class="btn bg-gradient-primary btn-lg btn-rounded w-100 mt-4 mb-0">Save Changes</button>
+                </div>
+            </form>
+            
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+
+<script src="/static/assets/js/sweetalert2.all.min.js"></script>
+
+
+<script>
+  $(document).ready(function() {
+    // Intercept form submission
+    $('#create-station-and-route-form').submit(function(e) {
+      e.preventDefault(); // Prevent the default form submission
+  
+      // Get form data
+      var formData = $(this).serialize();
+  
+      // Perform AJAX request
+      $.ajax({
+        type: 'POST',
+        url: '{% url "create_station_and_route" %}',
+        data: formData,
+        success: function(data) {
+          // Check the response from the server
+          if (data.success) {
+            // If successful, show SweetAlert success message
+            Swal.fire({
+              icon: 'success',
+              title: 'Success',
+              text: 'Station and route created successfully!',
+              showConfirmButton: false, // Hide the OK button
+              timer: 1000, 
+            }).then(function() {
+              // Redirect or perform any other action after success
+              window.location.href = '{% url "station_list" %}';
+            });
+          } else {
+            // If there's an error, show SweetAlert error message
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: data.message,
+            });
+          }
+        },
+        error: function() {
+          // Show an alert if there's an unexpected error
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An unexpected error occurred. Please try again.',
+          });
+        }
+      });
+    });
+  });
+  </script>
+
+
+{% endblock %}

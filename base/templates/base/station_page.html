@@ -1,0 +1,529 @@
+{% extends 'layout.html' %}
+
+
+{% block stylesheets %}
+<style>
+  .result{
+    background-color: green;
+    color:#fff;
+    padding:20px;
+  }
+</style>
+{% endblock stylesheets %}
+
+
+{% block content %}
+
+
+
+<div class="container-fluid py-4">
+  <div class="page-header min-height-150 border-radius-xl mt-4">
+    <span class="mask bg-gradient-dark opacity-6"></span>
+    
+ </div>
+ <div class="card card-body blur shadow-blur mx-4 mt-n6 overflow-hidden">
+  <div class="row mt-4">
+      
+    <div class="col-lg-7 mb-lg-0 mb-4">
+      <div class="card">
+        <div class="card-header pb-0 p-3 d-flex justify-content-between">
+            <h6 class="mb-0">Add driver to Queue</h6>
+            <p>Total Drivers served: 2</p>
+        </div>
+        
+        
+        <div class="card-body p-3">
+          
+          <div class="row">
+
+            <div class="col mb-4">
+              <div class="card">
+                 <div class="card-body p-3 w-50 m-auto">
+                    <div class="row">
+
+                       <div class="col ms-auto text-center mt-5 mt-lg-0">
+                        
+                        <h2 class="text-warning">Current Serving:</h2>
+
+                        <div class="border-radius-lg bg-gradient-warning p-3">
+
+                          <div class="py-3 text-center">
+                            <img src="/static/images/qr_code.gif" alt="" class="w-50 m-3" id="driver_photo">
+             
+                            <input type="text" class="form-control w-50 m-auto" id="qr_input" placeholder="Driver ID">
+                            <h4 class="text-white mt-4" id="driver_name"></h4>
+                            <p id="driver_route" class="text-white"></p>
+                          </div>
+                         
+                        </div>
+
+                        
+                        <div class="serving-time p-3 mt-5">
+                            <div class="clock">
+
+                              <h4 class="details">
+                                Current Time:
+                                <span class="time"></span>
+                                <small class="sec"></small>
+                                <span class="am_pm"></span>
+                              </h4>
+                          </div>
+                        </div>
+
+                        <div class="q_btn p-3 m-auto">
+
+                          <button type="button" class="btn btn-outline-secondary">Cancel</button>
+
+                          <button type="button" class="btn bg-gradient-dark icon-move-right" id="add-to-queue-button" data-driver-id="">Add to queue <i class="fas fa-arrow-right text-sm ms-1" aria-hidden="true"></i></button>
+                        </div>
+                       </div>
+                    </div>
+                 </div>
+              </div>
+           </div>
+            
+            
+
+          </div>
+
+        </div>
+    </div>
+
+    </div>
+
+
+    <div class="col-lg-5">
+      <div class="card">
+        <div class="card-header pb-0">
+          <div class="row">
+            <div class="col">
+              <h6>{{ station.name }}: <span class="font-weight-bold ms-1" id="date_time"></span></h6>
+              <p class="text-md mb-0">
+                <i class="fa fa-check text-info" aria-hidden="true"></i>
+                Now Serving
+              </p>
+
+            </div>
+
+          </div>
+        </div>
+        <div class="card-body px-0 pb-2">
+
+          <div class="card_entry d-flex flex-wrap">
+          
+          </div>
+          
+          <div class="table-responsive">
+            <table class="table align-items-center mb-0">
+              <thead>
+                <tr>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Entry Number</th>
+                </tr>
+              </thead>
+              <tbody class="">
+                {% for entry in queue_entries %}
+                {% if entry.has_paid_fee == False %}
+                <tr>
+                  <td class="text-center">
+                    <h3 class="mb-0" id="q_token_number">{{entry.token_number}}</h3>
+                    <p class="text-secondary mb-0" id="q_driver">{{ entry.driver.first_name }} {{ entry.driver.last_name}}</p>
+                  </td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        
+      </div>
+
+      
+    </div>
+
+
+  </div>
+ </div>
+
+
+
+
+    <!-- Modal -->
+    <!-- Scan QR Modal -->
+    <div class="row">
+      <div class="col-md-4">
+        <div class="modal fade" id="modal-scan_qr" tabindex="-1" role="dialog" aria-labelledby="modal-scan_qr" aria-hidden="true">
+          <div class="modal-dialog modal-danger modal-dialog-centered modal-" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h6 class="modal-title" id="modal-title-scan_qr">Please scan the driver QR Code</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="py-3 text-center">
+                  <img src="/static/images/qr_code.gif" alt="" class="w-50" id="driver_photo">
+   
+                  <input type="text" class="form-control w-50 m-auto" id="qr_input" placeholder="Driver ID">
+                  <h4 class="text-gradient text-danger mt-4" id="driver_name"></h4>
+                  <p id="driver_route"></p>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary text-dark ml-auto" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn bg-gradient-dark icon-move-right" id="add-to-queue-button" data-driver-id="">Add to queue <i class="fas fa-arrow-right text-sm ms-1" aria-hidden="true"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div class="col-md-4">
+        <button type="button" class="btn btn-block bg-gradient-warning mb-3" data-bs-toggle="modal" data-bs-target="#driver_info">Notification</button>
+        <div class="modal fade" id="driver_info" tabindex="-1" role="dialog" aria-labelledby="modal-notification" aria-hidden="true">
+          <div class="modal-dialog modal-danger modal-dialog-centered modal-" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h6 class="modal-title" id="modal-title-notification">Driver Information</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="py-3 text-center">
+                  <input type="hidden" id="driver_id">
+                  <img class="w-50" src="" id="driver_photo" alt="Driver Photo">
+                  <h4 class="text-gradient text-danger mt-4" id="driver_name"></h4>
+                  <p id="driver_route">Route: </p>
+                </div>
+              </div>
+              <div class="modal-footer">
+
+                <button type="button" class="btn btn-danger text-white ml-auto" data-bs-dismiss="modal">Cancel</button>
+
+                <button type="button" class="btn bg-gradient-dark icon-move-right" id="add-to-queue-button" data-driver-id="">Add to queue <i class="fas fa-arrow-right text-sm ms-1" aria-hidden="true"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <button type="button" class="btn btn-block btn-default mb-3" data-bs-toggle="modal" data-bs-target="#modal-form">Add Driver</button>
+      <div class="modal fade" id="modal-form" tabindex="-1" role="dialog" aria-labelledby="modal-form" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-body p-0">
+              <div class="card card-plain">
+                <div class="card-header pb-0 text-left">
+                  <h3 class="font-weight-bolder text-info text-gradient">Add Driver information</h3>
+                </div>
+                <div class="card-body">
+                  <form action="{% url 'add-driver' %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="modal-body">
+
+                        <div class="row">
+                          <div class="col form-group bmd-form-group">
+                            <label for="exampleInput1" class="bmd-label-floating"
+                              >Firstname</label
+                            >
+                            <input
+                              type="text"
+                              name="firstname"
+                              class="form-control"
+                              id="exampleInput1"
+                            />
+                          </div>
+            
+                          <div class="col form-group bmd-form-group">
+                            <label for="exampleInput1" class="bmd-label-floating"
+                              >Lastname</label
+                            >
+                            <input
+                              type="text"
+                              name="lastname"
+                              class="form-control"
+                              id="exampleInput1"
+                            />
+                          </div>
+                        </div>
+            
+                        <div class="row">
+                          <div class="col form-group bmd-form-group">
+                            <label for="exampleInput1" class="bmd-label-floating"
+                              >Birthdate</label
+                            >
+                            <input
+                              type="date"
+                              name="birthday"
+                              class="form-control"
+                              id="exampleInput1"
+                            />
+                          </div>
+            
+                          <div class="col form-group bmd-form-group">
+                            <label for="exampleInput1" class="bmd-label-floating"
+                              >Contact Number</label
+                            >
+                            <input
+                              type="text"
+                              name="contact_number"
+                              class="form-control"
+                              id="exampleInput1"
+                            />
+                          </div>
+                        </div>
+            
+                        <div class="row">
+                          <div class="col form-group bmd-form-group">
+                            <label for="exampleInput1" class="bmd-label-floating"
+                              >Address</label
+                            >
+                            <input
+                              type="text"
+                              name="address"
+                              class="form-control"
+                              id="exampleInput1"
+                            />
+                          </div>
+                        </div>
+            
+            
+                        <div class="row">
+                          
+                            <div class="col form-group">
+                              <label for="exampleFormControlSelect1">Select Route</label>
+                              <select class="form-control" id="" name="route">
+                                <option>Lingayen to Dagupan</option>
+                                <option>Lingayen to Aguilar</option>
+                                <option>Lingayen to Mangatarem</option>
+                                <option>Lingayen to Sual</option>
+                              </select>
+                            </div>
+                          
+                          <div class="col form-group">
+            
+                            <label class="custom-file-label" for="customFile">Add driver photo</label>
+                              <input type="file" name="photo" class="custom-file-input" id="customFile">
+                            
+                          </div>
+                        </div>
+
+                      
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-danger text-white ml-auto" data-bs-dismiss="modal">Cancel</button>
+
+                      <button type="submit" class="btn bg-gradient-dark icon-move-right">
+                        Add driver <i class="fas fa-arrow-right text-sm ms-1" aria-hidden="true"></i>
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+</div>
+
+
+
+{% endblock %}
+
+{% block javascripts %}
+<script src="/static/assets/js/plugins/jquery.min.js"></script>
+
+<script>
+  function focusOnInput() {
+      var rfidInput = document.getElementById('driver_input');
+      if (rfidInput) {
+          rfidInput.focus();
+      }
+  }
+
+  focusOnInput();
+</script>
+
+
+<script>
+
+    $('#modal-scan_qr').on('shown.bs.modal', function () {
+    $('#qr_input').focus();
+  });
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+$(document).ready(function () {
+    $('#qr_input').on('change', function () {
+        var driverId = $(this).val();
+
+        $.ajax({
+            type: 'POST',
+            url: "/driver_info/" + driverId + '/',
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function (data) {
+                // Update the modal content with the received data
+                $('#driver_photo').attr('src', data.qr);
+                $('#driver_name').text(data.name);
+                $('#driver_route').text('Route: ' + data.route);
+                $('#add-to-queue-button').attr('data-driver-id', data.id)
+
+                $('#driver_id').val(data.id);
+
+
+                
+                // Show the modal automatically
+               // $('#driver_info').modal('show');
+            },
+            error: function (xhr, status, error) {
+                console.log('Error:', error);
+                // Show a SweetAlert alert when driver is not found
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Driver Not Found',
+                    text: 'The driver with the given ID was not found.',
+                });
+            }
+        });
+    });
+
+  });
+
+
+
+
+</script>
+
+<!-- Reset Modal -->
+<script>
+  // Function to reset the modal content
+function resetModalContent() {
+    // Clear the input field
+    $('#qr_input').val('');
+
+    // Reset the image source (assuming you have the original source saved)
+    $('#driver_photo').attr('src', '/static/images/qr_code.gif');
+
+    // Clear the text in the driver_name element
+    $('#driver_name').text('');
+
+    // Clear the content in the driver_route element
+    $('#driver_route').text('');
+
+    // Close the modal (if needed)
+    $('#modal-scan_qr').modal('hide');
+}
+</script>
+
+<script>
+  $(document).ready(function () {
+      $(document).on('click', '#add-to-queue-button', function () {
+          var driverId = $('#driver_id').val();
+
+          $.ajax({
+              type: 'POST',
+              url: "/add_to_queue/" + driverId + '/',
+              data: {
+                  csrfmiddlewaretoken: '{{ csrf_token }}'
+              },
+              success: function (data) {
+                  if ('success' in data) {
+                      // Success message (you can replace the alert with your own UI element)
+                      alert(data.success);
+
+                      // Close the modal (if needed)
+                      $('#modal-scan_qr').modal('hide');
+                      resetModalContent();
+
+                      // Create a new table row and insert it into the table
+                      var newRow = '<tr>' +
+                          '<td class="text-center"><h3 class="mb-0" id="q_token_number">' + data.token_number + '</h3><p class="text-secondary mb-0" id="q_driver">' + data.driver_name+ '</p></td>' +  
+                          '</tr>';
+
+                         
+
+
+                      // Append the new row to the table
+                      $('.table tbody').append(newRow);
+                  } else if ('error' in data) {
+                      // Handle error (you can replace the alert with your own UI element)
+                      alert('Error: ' + data.error);
+                  }
+              },
+              error: function (xhr, status, error) {
+                  // Handle AJAX request error
+                  console.log('Error:', error);
+              }
+          });
+      });
+  });
+</script>
+
+
+
+<!--Realtime -->
+<script>
+    
+    function updateClock() {
+      const date_time = document.getElementById('date_time');
+      const clockElement = document.querySelector('.clock');
+      const timeElement = clockElement.querySelector('.time');
+      const amPmElement = clockElement.querySelector('.am_pm');
+      const secElement = clockElement.querySelector('.sec');
+      const dateElement = clockElement.querySelector('.date');
+
+      const now = new Date();
+      let hours = now.getHours();
+      const minutes = now.getMinutes();
+      const seconds = now.getSeconds();
+      const amPm = hours >= 12 ? 'PM' : 'AM';
+
+      // Convert hours to 12-hour format
+      if (hours > 12) {
+          hours -= 12;
+      } else if (hours === 0) {
+          hours = 12;
+      }
+
+      timeElement.textContent = `${hours}:${minutes.toString().padStart(2, '0')}`;
+      amPmElement.textContent = amPm;
+      secElement.textContent = seconds.toString().padStart(2, '0');
+
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      const month = monthNames[now.getMonth()];
+      const dayOfWeek = dayNames[now.getDay()];
+      const day = now.getDate();
+
+      date_time.innerHTML = `<span class="month"> ${month}, </span><span class="dayOfWeek">${dayOfWeek} </span><span class="day"> ${day} </span>`;
+    }
+
+    // Call the function immediately to initialize the clock
+    updateClock();
+
+    // Update the clock every second
+    setInterval(updateClock, 1000);
+
+</script>
+
+
+{% endblock javascripts %}
+

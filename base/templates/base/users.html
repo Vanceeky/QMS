@@ -1,0 +1,154 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<div class="container-fluid py-4">
+
+  <div class="header-body">
+
+      <div class="align-items-center py-4 d-flex justify-content-between">
+        <nav
+          aria-label="breadcrumb"
+          class=" d-md-inline-block ml-md-4 text-capitalize"
+        >
+          <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+            <li class="breadcrumb-item">
+              <a href="#"><i class="fas fa-home"></i></a>
+            </li>
+            <li class="breadcrumb-item">
+              <a href="">Staffs</a>
+            </li>
+
+          </ol>
+        </nav>
+
+        <div>
+
+          <button class="btn btn-md bg-gradient-info" data-bs-toggle="modal" data-bs-target="#add-staff"><i class="fas fa-plus"></i> Add new Staff </button>
+
+        </div>
+
+      </div>
+
+  </div>
+
+
+  <div class="row">
+    <div class="col-12">
+        <div class="card mb-4">
+            <div class="card-header pb-0">
+                <h6>List of Staffs </h6>
+            </div>
+            <div class="card-body px-0 pt-0 pb-2">
+                <div class="table-responsive p-0">
+                    <table class="table align-items-center justify-content-center mb-0" id="myTable">
+                        <thead>
+                            <tr>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Username</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Lastname</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2 text-center">Firstname </th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2 text-center">Email </th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2 text-center">Password</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder text-center opacity-7 ps-2">is Active</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                          {% for user in users %}
+                            <tr>
+                                <td class="text-center">
+                                    <h6 class="mb-0 text-sm">{{ user.username }}</h6>
+  
+                                  </td>
+                                <td class="text-center">
+                                  <h6 class="mb-0 text-sm">{{ user.last_name }}</h6>
+
+                                </td>
+                                <td class="text-center">
+                                    <p class="text-sm font-weight-bold mb-0">{{ user.first_name}}</p>
+                                </td>
+                                <td class="text-center">
+                                  <p class="text-sm font-weight-bold mb-0">{{ user.email }}</p>
+                                </td>
+                                <td class="text-center">
+                                  <p class="text-sm font-weight-bold mb-0">{{ user.password }} </p>
+                                </td>
+
+                                <td class="align-middle text-center">
+                                  <span class="badge badge-sm bg-gradient-success">{{ user.is_active }}</span>
+                                </td>
+
+
+                                <td class="align-middle">
+                                    <button class="btn btn-link text-secondary mb-0">
+                                    <i class="fa fa-ellipsis-v text-xs" aria-hidden="true"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                          {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+
+</div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="add-staff" tabindex="-1" role="dialog" aria-labelledby="exampleModalSignTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+          <div class="modal-content">
+            <div class="modal-body p-0">
+              <div class="card card-plain">
+                <div class="card-header pb-0 text-left">
+                    <h3 class="font-weight-bolder text-primary text-gradient">Add new user</h3>
+                    <p class="mb-0">Enter email and password to register</p>
+                </div>
+                <div class="card-body pb-3">
+                  <form role="form text-left" action="{% url 'create_user_account' %}" method="POST">
+                    {% csrf_token %}
+                    <label>Username</label>
+                    <div class="input-group mb-3">
+                      <input type="text" class="form-control" placeholder="Username" name="username" aria-label="Name" aria-describedby="name-addon" required>
+                    </div>
+                    <label>Email</label>
+                    <div class="input-group mb-3">
+                      <input type="email" class="form-control" placeholder="Email" name="email" aria-label="Email" aria-describedby="email-addon" required>
+                    </div>
+                    <label>Password</label>
+                    <div class="input-group mb-3">
+                      <input type="password" class="form-control" name="password1" placeholder="Password" aria-label="Password" aria-describedby="password-addon" required>
+                    </div>
+                    <label>Confirm Password</label>
+                    <div class="input-group mb-3">
+                      <input type="password" class="form-control" name="password2" placeholder="Confirm Password" aria-label="Password" aria-describedby="password-addon" required>
+                    </div>
+
+                    <div class="text-center">
+                      <button type="submit" class="btn bg-gradient-primary btn-lg btn-rounded w-100 mt-4 mb-0">Register Staff</button>
+                    </div>
+                  </form>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+
+<script src="/static/assets/js/dataTables.min.js"></script>
+
+<script>
+  let table = new DataTable('#myTable');
+
+</script>
+
+{% endblock %}

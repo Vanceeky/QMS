@@ -1,0 +1,445 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<div class="container-fluid py-4">
+
+  <div class="header-body">
+
+      <div class="align-items-center py-4 d-flex justify-content-between">
+        <nav
+          aria-label="breadcrumb"
+          class=" d-md-inline-block ml-md-4 text-capitalize"
+        >
+          <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+            <li class="breadcrumb-item">
+              <a href="#"><i class="fas fa-home"></i></a>
+            </li>
+            <li class="breadcrumb-item">
+              <a href="">Drivers</a>
+            </li>
+            <li class="breadcrumb-item active">
+              <a href="">List of Drivers</a>
+            </li>
+
+          </ol>
+        </nav>
+
+        <div>
+
+          <button class="btn btn-md bg-gradient-info" data-bs-toggle="modal" data-bs-target="#modal-add-driver  "><i class="fas fa-plus"></i> Register Driver </button>
+
+        </div>
+
+      </div>
+
+  </div>
+
+
+  <div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header pb-0">
+                <h6>List of Drivers </h6>
+            </div>
+            <div class="table-responsive">
+              <table class="table align-items-center mb-0" id="myTable">
+                <thead>
+                  <tr>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Driver</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Contact</th>
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Route</th>
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">QR Code</th>
+                    <th class="text-secondary opacity-7"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for driver in drivers %}
+                  <tr>
+                    <td>
+                      <div class="d-flex px-2 py-1">
+                        <div>
+                          <img src="{{ driver.photo.url }}" class="avatar avatar-lg me-3">
+                        </div>
+                        <div class="d-flex flex-column justify-content-center">
+                          <h6 class="mb-0 text-md"><a type="button" data-driver-id="{{ driver.id }}" class="driver-link" data-bs-toggle="modal" data-bs-target="#modal-driver-info">{{ driver.id }} - {{ driver.last_name }}, {{ driver.first_name }} </a></h6>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <p class="text-md font-weight-bold mb-0">{{ driver.contact_number }}</p>
+                    </td>
+                    <td class="align-middle text-center text-sm">
+                        <h6 class="mb-0 text-md">{{ driver.route }} </h6>
+                    </td>
+
+                    <td class="text-center">
+                        <div>
+                            <img src="{{ driver.qr_code.url }}" class="avatar avatar-md me-3 w-25 h-25">
+                          </div>
+                    </td>
+                    <td class="align-middle">
+                        <a href="#!" class="text-secondary font-weight-bold text-xs driver-link" data-bs-toggle="modal" data-bs-target="#modal-driver-info" data-driver-id="{{ driver.id }}" >
+                          Edit
+                        </a>
+
+                        | 
+
+                        <a href="{% url 'delete_driver' driver_id=driver.id %}" class="text-secondary font-weight-bold text-xs driver-link" data-driver-id="{{ driver.id }}" >
+                          delete
+                        </a>
+                      </td>
+                  </tr>
+                  {% endfor %}
+
+          
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+    </div>
+  </div>
+
+
+</div>
+
+<!-- Modal -->
+
+<div class="col-md-4">
+    <div class="modal fade" id="modal-add-driver" tabindex="-1" role="dialog" aria-labelledby="modal-form" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-body p-0">
+            <div class="card card-plain">
+              <div class="card-header pb-0 text-left border-bottom">
+                <h3 class="font-weight-bolder text-info text-gradient">Register a Driver</h3>
+              </div>
+              <div class="card-body">
+                <form role="form text-left" action="{% url 'add_driver' %}" method="POST"  enctype="multipart/form-data" id="add-driver-form">
+                  {% csrf_token %}
+                  <div class="row">
+                    <div class="col-md-6">
+                      <label for="">Firstname:</label>
+                      <div class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder="Firstname" name="first_name" required>
+                      </div>
+                    </div>
+
+                    <div class="col-md-6">
+                      <label for="">Lastname:</label>
+                      <div class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder="Lastname" name="last_name" required>
+                      </div>
+                    </div>
+
+                    <div class="col-md-6">
+                      <label for="">Date of birth:</label>
+                      <div class="input-group mb-3">
+                        <input type="date" class="form-control" name="date_of_birth" required>
+                      </div>
+                    </div>
+
+                    <div class="col-md-6">
+                      <label for="">Contact:</label>
+                      <div class="input-group mb-3">
+                        <input type="number" class="form-control" placeholder="Contact Number" name="contact" required>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <label for="">Address:</label>
+                      <div class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder="Address" name="address" required>
+                      </div>
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                      <div class="form-group">
+                        <label for="exampleFormControlSelect1">Route</label>
+                        <select class="form-control" id="route" name="route">
+                          {% for route in routes %}
+                          <option value="{{ route.id }}">{{ route }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="col-md-6">
+                      <label>Driver Photo:</label>
+                      <div class="input-group mb-3">
+                        <input type="file" class="form-control" name="avatar" required>
+                      </div>
+                    </div>
+
+
+
+                  </div>
+
+                  <div class="text-center">
+                    <button type="submit" class="btn btn-round bg-gradient-info btn-lg w-100 mt-4 mb-0">Register Driver</button>
+                  </div>
+                </form>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+<div class="col-md-4">
+
+    <div class="modal fade" id="modal-driver-info" tabindex="-1" role="dialog" aria-labelledby="modal-notification" aria-hidden="true">
+      <div class="modal-dialog modal-danger modal-dialog-centered modal-" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h6 class="modal-title" id="modal-title-notification">Driver Information</h6>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+
+          <form role="form text-left" action="{% url 'edit_driver' %}" method="POST"  enctype="multipart/form-data" id="edit-driver-form">
+            <div class="modal-body">
+                {% csrf_token %}
+                <input type="hidden" value="" id="driver_id" name="driver_id">
+                <div class="row">
+                  <div class="col-md-6">
+                    <label for="">Firstname:</label>
+                    <div class="input-group mb-3">
+                      <input type="text" class="form-control" placeholder="Firstname" name="first_name" required>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <label for="">Lastname:</label>
+                    <div class="input-group mb-3">
+                      <input type="text" class="form-control" placeholder="Lastname" name="last_name" required>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <label for="">Date of birth:</label>
+                    <div class="input-group mb-3">
+                      <input type="date" class="form-control" name="date_of_birth" required>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <label for="">Contact:</label>
+                    <div class="input-group mb-3">
+                      <input type="number" class="form-control" placeholder="Contact Number" name="contact" required>
+                    </div>
+                  </div>
+                  <div class="col-md-12">
+                    <label for="">Address:</label>
+                    <div class="input-group mb-3">
+                      <input type="text" class="form-control" placeholder="Address" name="address" required>
+                    </div>
+                  </div>
+
+
+                  <div class="col-md-6">
+
+                    <div class="form-group">
+                      <label for="exampleFormControlSelect1">Route</label>
+                      <select class="form-control" id="route" name="route">
+                        {% for route in routes %}
+                        <option value="{{ route.id }}">{{ route }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <label>Driver Photo:</label>
+                    <div class="input-group mb-3">
+                      <input type="file" class="form-control" name="avatar">
+                    </div>
+                  </div>
+
+
+
+                </div>
+              
+
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-white" data-bs-dismiss="modal">Ok, Got it</button>
+              <button type="submit" class="btn btn-info text-white ml-auto">Save</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+
+<!-- Include jQuery library -->
+<script src="/static/assets/js/plugins/jquery.min.js"></script>
+
+<!-- Include SweetAlert library -->
+<script src="/static/assets/js/sweetalert2.all.min.js"></script>
+
+<script src="/static/assets/js/dataTables.min.js"></script>
+
+<script>
+  let table = new DataTable('#myTable');
+
+</script>
+
+<!-- Update the JavaScript code in your template -->
+<!-- Update the JavaScript code in your template -->
+<script>
+  $(document).ready(function () {
+    $(".driver-link").on("click", function () {
+      // Retrieve the driver ID from the link's data attribute
+      var driverId = $(this).data("driver-id");
+
+      // Make an AJAX request to the driver_info endpoint
+      $.ajax({
+        url: `/driver_info/${driverId}/`,
+        method: "GET",
+        success: function (data) {
+          // Check if the response contains an error
+          if (data.error) {
+            alert(data.error);  // Display an error message, or handle it as needed
+          } else {
+            // Populate the modal form fields with driver information
+            $("#edit-driver-form [name='driver_id']").val(data.id);
+            $("#edit-driver-form [name='first_name']").val(data.first_name);
+            $("#edit-driver-form [name='last_name']").val(data.last_name);
+            $("#edit-driver-form [name='date_of_birth']").val(data.date_of_birth);
+            $("#edit-driver-form [name='contact']").val(data.contact_number);
+            $("#edit-driver-form [name='address']").val(data.address);
+            $("#edit-driver-form [name='route']").val(data.route.id);
+
+            // Update the modal content
+            $("#modal-driver-info").modal("show");
+          }
+        },
+        error: function (error) {
+          console.log("Error:", error);
+          // Handle the error as needed (e.g., display an error message)
+        }
+      });
+    });
+  });
+</script>
+
+
+
+
+
+<script>
+  $(document).ready(function () {
+    $("#add-driver-form").submit(function (event) {
+        event.preventDefault();
+
+        var formData = new FormData($(this)[0]);
+
+        $.ajax({
+            type: "POST",
+            url: "{% url 'add_driver' %}",  // Update with the correct URL
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                if (data.success) {
+                    // Show success message with SweetAlert
+                    Swal.fire({
+                        title: "Success!",
+                        text: data.success,
+                        icon: "success",
+                        showConfirmButton: false, // Hide the OK button
+                    });
+
+                    // Delay the display of driver data by 1 second
+                    setTimeout(function () {
+                        // Display driver data in another SweetAlert
+                        displayDriverData(data);
+                    }, 1000);
+
+                    // You can redirect to another page if needed
+                    // window.location.href = "{% url 'drivers' %}";
+                } else {
+                    // Show error message with SweetAlert
+                    Swal.fire({
+                        title: "Error!",
+                        text: data.error,
+                        icon: "error",
+                        confirmButtonText: "OK",
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                // Handle other errors if needed
+                console.log("Error:", error);
+            },
+        });
+    });
+});
+
+// Function to display driver data in a SweetAlert
+function displayDriverData(data) {
+    // Create an image element for the QR code
+    var qrCodeImage = document.createElement("img");
+    qrCodeImage.src = data.qr;
+
+    Swal.fire({
+      title: `<h3><strong>${data.name}</strong></h3>`,
+      html: `
+          <div class="text-center">
+              ${qrCodeImage.outerHTML}
+          </div>
+          <h5><strong>${data.route}</strong></h5>
+      `,
+      confirmButtonText: "print",
+      willClose: function () {
+          // Create a new window for printing
+          var printWindow = window.open('', '_blank');
+  
+          // Construct the HTML content for printing
+          var printContent = `<center>
+              <h3><strong>Name:</strong> ${data.name}</h3>
+              <p><strong>QR Code:</strong></p>
+              <div class="text-center">
+                  ${qrCodeImage.outerHTML}
+              </div>
+              <h4><strong>Route:</strong> ${data.route}</h4>
+          </center>`;
+  
+          // Set the HTML content of the new window
+          printWindow.document.write(`
+              <html>
+              <head>
+                  <title>Driver Data</title>
+              </head>
+              <body>${printContent}</body>
+              </html>
+          `);
+  
+          // Trigger print in the new window
+          printWindow.document.close();
+          printWindow.print();
+  
+          // Close the print window
+          printWindow.close();
+  
+          // Reload the page
+          location.reload();
+      },
+  });
+}
+
+  </script>
+  
+
+
+{% endblock %}

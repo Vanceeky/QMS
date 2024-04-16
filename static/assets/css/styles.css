@@ -1,0 +1,35 @@
+/* For WebKit browsers (e.g., Chrome, Safari) */
+::-webkit-scrollbar {
+    width: thin;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background-color: #8898aa; /* Change this to your desired thumb color */
+    border-radius: 6px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background-color: #f1f1f1; /* Change this to your desired track color */
+  }
+  
+  /* For Firefox */
+  /* Note: Firefox currently only supports scrollbar-color, not scrollbar-width */
+  * {
+    scrollbar-color: #3498db #f1f1f1;
+  }
+  
+  /* For Internet Explorer and Edge */
+  /* Note: Edge currently supports both scrollbar-color and scrollbar-width */
+  * {
+    scrollbar-width: thin;
+  }
+  
+  *::-ms-scrollbar-thumb {
+    background-color: #3498db; /* Change this to your desired thumb color */
+  }
+  
+  *::-ms-scrollbar-track {
+    background-color: #f1f1f1; /* Change this to your desired track color */
+  }
+  
